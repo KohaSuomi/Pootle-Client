@@ -10,7 +10,7 @@ WriteMakefile(
   VERSION_FROM => 'lib/Pootle/Client.pm',
   ABSTRACT     => 'Pootle API Client library',
   AUTHOR       => 'Olli-Antti Kivilahti <olli-antti.kivilahti@jns.fi>',
-  LICENSE      => 'GPL-3',
+  LICENSE      => 'Perl 5',
   META_MERGE   => {
     dynamic_config => 0,
     'meta-spec'    => {version => 2},

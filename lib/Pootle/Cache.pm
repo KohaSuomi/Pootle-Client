@@ -69,7 +69,7 @@ Loads cache from disk, if cache is not present, tests for file permissions to pe
 
 sub loadCache($s) {
 
-  my $cache;
+  my $cache = "{}";
   try {
     $cache = File::Slurp::read_file($cacheFile, { binmode => ':encoding(UTF-8)' });
   } catch { my $e = $_;

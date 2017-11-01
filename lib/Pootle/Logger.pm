@@ -62,6 +62,7 @@ sub initLogger {
   Log::Log4perl->easy_init({
     level => _levelToLog4perlLevelInt($ENV{POOTLE_CLIENT_VERBOSITY} || 'WARN'),
     utf8 => 1,
+    layout   => '[%d{HH:mm:ss}] %p %M(): %m%n',
   });
 }
 

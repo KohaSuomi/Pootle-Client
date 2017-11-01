@@ -61,6 +61,7 @@ sub persist {
   if ($@) {
     ok(0, $@);
   }
+  unlink $cacheFile; #Finally cleanup
 };
 
 done_testing();

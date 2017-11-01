@@ -82,7 +82,7 @@ sub loadCache($s) {
     $cache = File::Slurp::read_file($s->cacheFile, { binmode => ':encoding(UTF-8)' });
   } catch { my $e = $_;
     if ($e =~ /sysopen: No such file or direc/) {
-      open(my $FH, '>:encoding(UTF-8)', $s->cacheFile) or die "Couldn't initialize cache file=".$s->cacheFile.", Cwd=".Cwd::getcwd.", $!";
+      open(my $FH, '>:encoding(UTF-8)', $s->cacheFile) or $l->logdie($s->toString()." Couldn't initialize cache file, Cwd=".Cwd::getcwd.", $!");
     }
     else {
       die $e;
@@ -90,6 +90,10 @@ sub loadCache($s) {
   };
 
   $s->{pCache} = _evalCacheContents($cache);
+  unless ($s->pCache) {
+    $l->warn("Loaded cache contents are undefined");
+    $s->{pCache} = {};
+  }
   $s->{tCache} = {};
 }
 
@@ -108,9 +112,9 @@ sub _evalCacheContents($contents) {
 }
 
 sub saveCache($s) {
-  $l->debug("saveCache():> Cache to '".$s->cacheFile."' is being persisted");
-  open(my $FH, '>:encoding(UTF-8)', $s->cacheFile) or $l->logdie("Couldn't write cache file $s->cacheFile to ".Cwd::getcwd.", $!");
-  print $FH Data::Dumper->new([$s->{cache}],[])->Terse(1)->Indent(1)->Varname('')->Maxdepth(0)->Sortkeys(1)->Quotekeys(1)->Dump();
+  $l->debug($s->toString()." is being persisted") if $l->is_debug;
+  open(my $FH, '>:encoding(UTF-8)', $s->cacheFile) or $l->logdie($s->toString()." failed to persist to file. Cwd=".Cwd::getcwd.", $!");
+  print $FH Data::Dumper->new([$s->pCache],[])->Terse(1)->Indent(1)->Varname('')->Maxdepth(0)->Sortkeys(1)->Quotekeys(1)->Dump();
   close($FH);
 }
 
@@ -126,15 +130,15 @@ Store a value to the transient in-memory store. This will never be flushed to di
 =cut
 
 sub tSet($s, $k, $v) {
-  return $s->{tCache}->{$k} = $v;
+  return $s->tCache->{$k} = $v;
 }
 
 sub tGet($s, $k) {
-  return $s->{tCache}->{$k};
+  return $s->tCache->{$k};
 }
 
 sub tFlush($s) {
-  $s->{tCache} = {};
+  $s->tCache = {};
 }
 
 =head2 pSet
@@ -144,11 +148,11 @@ Store a value to the persistent in-memory store
 =cut
 
 sub pSet($s, $k, $v) {
-  return $s->{pCache}->{$k} = $v;
+  return $s->pCache->{$k} = $v;
 }
 
 sub pGet($s, $k) {
-  return $s->{pCache}->{$k};
+  return $s->pCache->{$k};
 }
 
 =head pFlush
@@ -160,15 +164,31 @@ Flushes the persistent cache from disk, forcing the Pootle::Client to fetch new 
 =cut
 
 sub pFlush($s) {
-  $l->debug("pFlush():> Cache to '".$s->cacheFile."' is being flushed");
-  $s->{pCache} = {};
+  $l->debug($s->toString()." is being flushed") if $l->is_debug;
+  $s->pCache = {};
   my $rv = unlink $s->cacheFile;
-  $l->error("pFlush():> Cache '".$s->cacheFile."' couldn't be flushed: $!") if $rv;
+  $l->error($s->toString()." couldn't be flushed: $!") if $rv;
   return $rv;
 }
 
+=head2 toString
+
+    my $pc = Pootle::Cache->new();
+    print "Cuddling with Cache ".$pc." tonight\n";
+
+Serialize this Cache as a simple one-liner keypoint description of it's internal state
+
+ @RETURNS String
+
+=cut
+
+sub toString($s) {
+  return $s.' cacheFile='.$s->cacheFile.', pCache buckets='.%{$s->pCache}.', tCache buckets='.%{$s->tCache};
+}
+
 sub DESTROY($s) {
-  $l->debug("DESTROY():> Cache to '".$s->cacheFile."' is getting destroyed");
+  $l->debug($s->toString()." is getting destroyed") if $l->is_debug();
+
   eval { $s->saveCache(); };
   if ($@) {
     $l->warn($@);
@@ -176,12 +196,18 @@ sub DESTROY($s) {
 }
 
 sub cacheFile($s)            { return $s->{cacheFile} }
+sub pCache($s)               { return $s->{pCache} }
+sub tCache($s)               { return $s->{tCache} }
 
 =head2 Accessors
 
 =over 4
 
 =item B<cacheFile>
+
+=item B<pCache>
+
+=item B<tCache>
 
 =cut
 

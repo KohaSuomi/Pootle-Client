@@ -12,7 +12,7 @@ use Getopt::Long qw(:config no_ignore_case);
 use Data::Dumper;
 
 
-my ($help, $pootleBaseurl, $apiEndpoint, $credentials);
+my ($help, $pootleBaseurl, $apiEndpoint, $credentials, $cacheFile);
 my $verbose = 0;
 
 GetOptions(
@@ -21,6 +21,7 @@ GetOptions(
     'p|pootle-url:s'              => \$pootleBaseurl,
     'a|api-endpoint:s'            => \$apiEndpoint,
     'c|credentials:s'             => \$credentials,
+    'cacheFile:s'                 => \$cacheFile,
 );
 
 my $usage = <<USAGE;
@@ -45,6 +46,8 @@ It is advised to test first with the "dry-run"-flag and "test"-flag.
                         relative or absolute path to a UTF-8 encoded file containing the credentials on it's first row.
                         It is not recommended to give credentials as commandline parameters directly.
 
+  --cacheFile           String, path to the cache file. If doesn't exists, cache file is created.
+
 EXAMPLE
 
   pootle-client -v TRACE -p https://pootle.pot.com -a /api/v1/units/19925516/ -c credentials.txt
@@ -62,7 +65,7 @@ $ENV{POOTLE_CLIENT_VERBOSITY} = $verbose;
 
 use Pootle::Client;
 
-my $pa = Pootle::Client->new({baseUrl => $pootleBaseurl, credentials => $credentials});
+my $pa = Pootle::Client->new({baseUrl => $pootleBaseurl, credentials => $credentials, cacheFile => $cacheFile});
 my ($response, $payloadHash) = $pa->a->request('get', $apiEndpoint, {});
 say $response->content();
 

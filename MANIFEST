@@ -26,6 +26,7 @@ t/01-filters.t
 t/02-simple_API_calls.t
 t/03-agent.t
 t/04-credentials.t
+t/05-cache.t
 t/10-use_case-find_language_files_from_projects.t
 t/Mock/Agent.pm
 t/Mock/Client.pm

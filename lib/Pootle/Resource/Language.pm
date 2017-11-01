@@ -38,9 +38,7 @@ sub new($class, @params) {
     specialchars         => 1,
     translation_projects => { type => ARRAYREF },
   });
-
-  my $s = \%self;
-  bless($s, $class);
+  my $s = bless(\%self, $class);
 
   return $s;
 }

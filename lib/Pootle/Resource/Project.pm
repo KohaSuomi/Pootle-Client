@@ -40,9 +40,7 @@ sub new($class, @params) {
     translation_projects => { type => ARRAYREF }, #eg. [ "/api/v1/translation-projects/71/", ... ],
     treestyle            => 1,                    #eg. "nongnu",
   });
-
-  my $s = \%self;
-  bless($s, $class);
+  my $s = bless(\%self, $class);
 
   return $s;
 }

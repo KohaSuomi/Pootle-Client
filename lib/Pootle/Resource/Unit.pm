@@ -49,9 +49,7 @@ sub new($class, @params) {
     target_wordcount      => 1, #eg. 0,
     translator_comment    => 1, #eg. ""
   });
-
-  my $s = \%self;
-  bless($s, $class);
+  my $s = bless(\%self, $class);
 
   return $s;
 }

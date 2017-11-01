@@ -37,9 +37,7 @@ sub new($class, @params) {
     resource_uri => 1,                     #eg. "/api/v1/translation-projects/65/"
     stores       => { type => ARRAYREF } , #eg. [ "/api/v1/stores/77/", ... ]
   });
-
-  my $s = \%self;
-  bless($s, $class);
+  my $s = bless(\%self, $class);
 
   return $s;
 }

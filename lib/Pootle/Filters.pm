@@ -66,9 +66,7 @@ sub new($class, @params) {
   my %self = validate(@params, {
     filters       => { type => HASHREF, optional => 1 },
   });
-
-  my $s = \%self;
-  bless($s, $class);
+  my $s = bless(\%self, $class);
 
   return $s;
 }

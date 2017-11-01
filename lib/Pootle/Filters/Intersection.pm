@@ -33,9 +33,7 @@ sub new($class, @params) {
     obj2Attribute  => 1, #eg. "translationProjects",
     attributeValue => 1, #eg. "/api/v1/translation-projects/1178/"
   });
-
-  my $s = \%self;
-  bless($s, $class);
+  my $s = bless(\%self, $class);
 
   return $s;
 }

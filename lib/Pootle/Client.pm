@@ -39,6 +39,8 @@ See L<Pootle::Cache>, for how the simple caching system works to spare the Pootl
 
 =cut
 
+use Params::Validate qw(:all);
+
 use Pootle::Agent;
 use Pootle::Cache;
 use Pootle::Filters;
@@ -51,16 +53,17 @@ use Pootle::Resource::Project;
 use Pootle::Logger;
 my $l = bless({}, 'Pootle::Logger'); #Lazy load package logger this way to avoid circular dependency issues with logger includes from many packages
 
-sub new($class, $params) {
-  $l->debug("Initializing ".__PACKAGE__." with parameters: ".$l->flatten($params)) if $l->is_debug();
+sub new($class, @params) {
+  $l->debug("Initializing '$class' with parameters: ".$l->flatten(@params)) if $l->is_debug();
+  my %self = validate(@params, {
+    baseUrl       => 1, #Passed to Pootle::Agent
+    credentials   => 1, #Passed to Pootle::Agent
+    cacheFile     => 0, #Passed to Pootle::Cache
+  });
+  my $s = bless(\%self, $class);
 
-  my %self = %$params;
-  my $s = \%self;
-
-  bless($s, $class);
-
-  $s->{agent} = new Pootle::Agent($params);
-  $s->{cache} = new Pootle::Cache($params);
+  $s->{agent} = new Pootle::Agent({baseUrl => $s->{baseUrl}, credentials => $s->{credentials}});
+  $s->{cache} = new Pootle::Cache({cacheFile => $s->{cacheFile}});
 
   return $s;
 }
@@ -73,6 +76,7 @@ sub new($class, $params) {
 =cut
 
 sub language($s, $endpoint) {
+  $l->info("getting language $endpoint");
   my $contentHash = $s->a->request('get', $endpoint, {});
   return new Pootle::Resource::Language($contentHash);
 }
@@ -85,7 +89,12 @@ sub language($s, $endpoint) {
 =cut
 
 sub languages($s) {
-  return $s->c->tGet('/api/v1/languages/') if $s->c->tGet('/api/v1/languages/');
+  if (my $cached = $s->c->tGet('/api/v1/languages/')) {
+    $l->info("getting languages from cache");
+    return $cached;
+  }
+  $l->info("getting languages");
+
   my $contentHash = $s->a->request('get', '/api/v1/languages/', {});
   my $objs = $contentHash->{objects};
   for (my $i=0 ; $i<@$objs ; $i++) {
@@ -106,8 +115,11 @@ Uses the API to find all languages starting with the given country code
 =cut
 
 sub findLanguages($s, $filters) {
-  my $cached = $s->c->pGet('findLanguages '.$l->flatten($filters));
-  return $cached if $cached;
+  if (my $cached = $s->c->pGet('findLanguages '.$l->flatten($filters))) {
+    $l->info("finding languages from cache");
+    return $cached if $cached;
+  }
+  $l->info("finding languages");
 
   my $objects = $filters->filter( $s->languages() );
 
@@ -123,6 +135,7 @@ sub findLanguages($s, $filters) {
 =cut
 
 sub translationProject($s, $endpoint) {
+  $l->info("getting translation project $endpoint");
   my $contentHash = $s->a->request('get', $endpoint, {});
   return new Pootle::Resource::TranslationProject($contentHash);
 }
@@ -143,7 +156,12 @@ Really depends on how many translation projects you are after.
 =cut
 
 sub translationProjects($s) {
-  return $s->c->tGet('/api/v1/translation-projects/') if $s->c->tGet('/api/v1/translation-projects/');
+  if (my $cache = $s->c->tGet('/api/v1/translation-projects/')) {
+    $l->info("getting translation projects from cache");
+    return $cache;
+  }
+  $l->info("getting translation projects");
+
   my $contentHash = $s->a->request('get', '/api/v1/translation-projects/', {});
   my $objs = $contentHash->{objects};
   for (my $i=0 ; $i<@$objs ; $i++) {
@@ -169,8 +187,11 @@ Uses the API to find all translation projects matching the given search expressi
 =cut
 
 sub findTranslationProjects($s, $filters) {
-  my $cached = $s->c->pGet('findTranslationProjects '.$l->flatten($filters));
-  return $cached if $cached;
+  if (my $cached = $s->c->pGet('findTranslationProjects '.$l->flatten($filters))) {
+    $l->info("finding translation projects from cache");
+    return $cached;
+  }
+  $l->info("finding translation projects");
 
   my $objects = $filters->filter( $s->translationProjects() );
 
@@ -192,8 +213,11 @@ sub findTranslationProjects($s, $filters) {
 =cut
 
 sub searchTranslationProjects($s, $languageFilters, $projectFilters) {
-  my $cached = $s->c->pGet('searchTranslationProjects '.$l->flatten($languageFilters).$l->flatten($projectFilters));
-  return $cached if $cached;
+  if (my $cached = $s->c->pGet('searchTranslationProjects '.$l->flatten($languageFilters).$l->flatten($projectFilters))) {
+    $l->info("searching translation projects from cache");
+    return $cached;
+  }
+  $l->info("searching translation projects");
 
   my $languages;
   if (ref($languageFilters) eq 'ARRAY' && blessed($languageFilters->[0]) && $languageFilters->[0]->isa('Pootle::Resource::Language')) {
@@ -229,6 +253,7 @@ sub searchTranslationProjects($s, $languageFilters, $projectFilters) {
 =cut
 
 sub store($s, $endpoint) {
+  $l->info("getting store $endpoint");
   my $contentHash = $s->a->request('get', $endpoint, {});
   return new Pootle::Resource::Store($contentHash);
 }
@@ -246,8 +271,11 @@ sub store($s, $endpoint) {
 =cut
 
 sub searchStores($s, $languageFilters, $projectFilters) {
-  my $cached = $s->c->pGet('searchStores '.$l->flatten($languageFilters).$l->flatten($projectFilters));
-  return $cached if $cached;
+  if (my $cached = $s->c->pGet('searchStores '.$l->flatten($languageFilters).$l->flatten($projectFilters))) {
+    $l->info("searching stores from cache");
+    return $cached;
+  }
+  $l->info("searching stores");
 
   my $transProjs = $s->searchTranslationProjects($languageFilters, $projectFilters);
 
@@ -270,6 +298,7 @@ sub searchStores($s, $languageFilters, $projectFilters) {
 =cut
 
 sub project($s, $endpoint) {
+  $l->info("getting project $endpoint");
   my $contentHash = $s->a->request('get', $endpoint, {});
   return new Pootle::Resource::Project($contentHash);
 }
@@ -282,7 +311,12 @@ sub project($s, $endpoint) {
 =cut
 
 sub projects($s) {
-  return $s->c->tGet('/api/v1/projects/') if $s->c->tGet('/api/v1/projects/');
+  if(my $cached = $s->c->tGet('/api/v1/projects/')) {
+    $l->info("getting projects from cache");
+    return $cached;
+  }
+  $l->info("getting projects");
+
   my $contentHash = $s->a->request('get', '/api/v1/projects/', {});
   my $objs = $contentHash->{objects};
   for (my $i=0 ; $i<@$objs ; $i++) {
@@ -303,8 +337,11 @@ Uses the API to find all projects matching the given search expressions
 =cut
 
 sub findProjects($s, $filters) {
-  my $cached = $s->c->pGet('findProjects '.$l->flatten($filters));
-  return $cached if $cached;
+  if (my $cached = $s->c->pGet('findProjects '.$l->flatten($filters))) {
+    $l->info("finding projects from cache");
+    return $cached;
+  }
+  $l->info("finding projects");
 
   my $objects = $filters->filter( $s->projects() );
 
@@ -320,6 +357,7 @@ sub findProjects($s, $filters) {
 =cut
 
 sub unit($s, $endpoint) {
+  $l->info("getting unit $endpoint");
   my $contentHash = $s->a->request('get', $endpoint, {});
   return new Pootle::Resource::Unit($contentHash);
 }

@@ -40,9 +40,7 @@ sub new($class, @params) {
     translation_project => 1, #eg. "/api/v1/translation-projects/65/"
     units               => 1, #eg. [ '/api/v1/units/70316/', ... ]
   });
-
-  my $s = \%self;
-  bless($s, $class);
+  my $s = bless(\%self, $class);
 
   return $s;
 }

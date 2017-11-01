@@ -60,9 +60,9 @@ sub new($class, @params) {
   my %self = validate(@params, {
     cacheFile => { default => 'pootle-client.cache'},
   });
+  my $s = bless(\%self, $class);
 
-  my $s = \%self;
-  bless($s, $class);
+  $s->{cacheFile} = 'pootle-client.cache' unless $s->{cacheFile}; #Params::Validate doesn't set the default value if key exists without value
 
   $s->loadCache();
 

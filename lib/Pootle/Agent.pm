@@ -19,6 +19,7 @@ LWP::Curl wrapper to deal with various types of exceptions transparently
 
 =cut
 
+use Params::Validate qw(:all);
 use LWP::UserAgent;
 use Encode;
 use MIME::Base64;
@@ -33,13 +34,13 @@ use Pootle::Exception::HTTP::MethodNotAllowed;
 use Pootle::Exception::HTTP::NotFound;
 use Pootle::Exception::Credentials;
 
-sub new($class, $params) {
-  $l->debug("Initializing ".__PACKAGE__." with parameters: ".$l->flatten($params)) if $l->is_debug();
-
-  my %self = %$params;
-  my $s = \%self;
-
-  bless($s, $class);
+sub new($class, @params) {
+  $l->debug("Initializing '$class' with parameters: ".$l->flatten(@params)) if $l->is_debug();
+  my %self = validate(@params, {
+    baseUrl => 1,
+    credentials => 1,
+  });
+  my $s = bless(\%self, $class);
 
   $s->{credentials} = $s->_loadCredentials();
 
@@ -127,7 +128,7 @@ sub _loadCredentials($s) {
   my $file;
   if (-e $c) { #This is a file
     $file = $c;
-    $l->info("_loadCredentials():> Loading credentials from file '$c'");
+    $l->info("Loading credentials from file '$c'");
     my @rows = File::Slurp::read_file( $c => { binmode => ':encoding(UTF-8)' } );
     $c = $rows[0];
   }
@@ -161,6 +162,12 @@ sub baseUrl($s) {
 sub credentials($s) {
   return $s->{credentials};
 }
+
+=head2 ua
+
+ @RETURNS L<LWP::UserAgent>
+
+=cut
 
 sub ua($s) { return $s->{ua} }
 

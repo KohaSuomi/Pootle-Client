@@ -166,4 +166,6 @@ sub findFiles {
   }
 };
 
+t::Mock::Client::cleanup($papi);
+
 done_testing();

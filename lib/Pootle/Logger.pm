@@ -21,10 +21,10 @@ Wrapper for the awesome Log::Log4perl
 =head2 Synopsis
 
     $ENV{POOTLE_CLIENT_VERBOSITY} = 'DEBUG'; #Set the log verbosity using Log::Log4perl log levels
-    
+
     use Pootle::Logger;
     my $l = bless({}, 'Pootle::Logger'); #Lazy load package logger this way to avoid circular dependency issues with logger includes from many packages
-    
+
     sub faraway {
         $l->debug("Debugging params: "$l->flatten(@_)) if $l->is_debug();
     }

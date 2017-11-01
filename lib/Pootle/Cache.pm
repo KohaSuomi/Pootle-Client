@@ -138,7 +138,7 @@ sub tGet($s, $k) {
 }
 
 sub tFlush($s) {
-  $s->tCache = {};
+  $s->{tCache} = {};
 }
 
 =head2 pSet
@@ -165,7 +165,7 @@ Flushes the persistent cache from disk, forcing the Pootle::Client to fetch new 
 
 sub pFlush($s) {
   $l->debug($s->toString()." is being flushed") if $l->is_debug;
-  $s->pCache = {};
+  $s->{pCache} = {};
   my $rv = unlink $s->cacheFile;
   $l->error($s->toString()." couldn't be flushed: $!") if $rv;
   return $rv;

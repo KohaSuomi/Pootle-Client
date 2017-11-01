@@ -30,6 +30,10 @@ maps to Pootle::Resource::Project locally.
 
 See L<Pootle::Cache>, for how the simple caching system works to spare the Pootle-Server from abuse
 
+=head2 Logger
+
+See L<Pootle::Logger>, for how to change Pootle::Client chattiness
+
 =head1 Synopsis
 
     my $papi = Pootle::Client->new({baseUrl => 'http://translate.example.com', credentials => 'username:password' || 'credentials.txt'});
@@ -362,6 +366,21 @@ sub unit($s, $endpoint) {
   return new Pootle::Resource::Unit($contentHash);
 }
 
+
+
+#########   ###   ###
+ ## HELPERS  ###   ###
+#########   ###   ###
+
+=head2 flushCaches
+
+Flushes all caches
+
+=cut
+
+sub flushCaches($s) {
+  $s->c->flushCaches();
+}
 
 ##########    ###   ###
  ## ACCESSORS  ###   ###

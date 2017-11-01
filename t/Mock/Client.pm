@@ -62,4 +62,18 @@ sub unit {
   return t::Mock::Resource::Units::one(@_);
 }
 
+
+
+
+
+=head2 cleanup
+
+ @PARAM1 Pootle::Client
+
+=cut
+
+sub cleanup($papi) {
+  $papi->flushCaches();
+}
+
 1;

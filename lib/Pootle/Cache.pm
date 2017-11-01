@@ -15,7 +15,7 @@ use Scalar::Util qw(blessed);
 use Data::Dumper;
 use Cwd;
 
-=head2 Pootle::Cache
+=head1 Pootle::Cache
 
 Persist API results somewhere to prevent excessive spamming of the Pootle-Client.
 These changes might persist over the current process exiting.
@@ -41,19 +41,27 @@ you must flush the persistent cache using:
 
 =cut
 
+use Params::Validate qw(:all);
 use File::Slurp;
 
 use Pootle::Logger;
 my $l = bless({}, 'Pootle::Logger'); #Lazy load package logger this way to avoid circular dependency issues with logger includes from many packages
 
-our $cacheFile = 'pootle-api.cache';
+=head2 new
 
-sub new($class, $params) {
-  $l->debug("Initializing ".__PACKAGE__." with parameters: ".$l->flatten($params)) if $l->is_debug();
+    my $c = new Pootle::Cache({
+      cacheFile => 'pootle-client.cache', #Where the persistent cache should be saved?
+    });
 
-  my %self = %$params;
+=cut
+
+sub new($class, @params) {
+  $l->debug("Initializing '$class' with parameters: ".$l->flatten(@params)) if $l->is_debug();
+  my %self = validate(@params, {
+    cacheFile => { default => 'pootle-client.cache'},
+  });
+
   my $s = \%self;
-
   bless($s, $class);
 
   $s->loadCache();
@@ -71,23 +79,37 @@ sub loadCache($s) {
 
   my $cache = "{}";
   try {
-    $cache = File::Slurp::read_file($cacheFile, { binmode => ':encoding(UTF-8)' });
+    $cache = File::Slurp::read_file($s->cacheFile, { binmode => ':encoding(UTF-8)' });
   } catch { my $e = $_;
     if ($e =~ /sysopen: No such file or direc/) {
-      open(my $FH, '>:encoding(UTF-8)', $cacheFile) or die "Couldn't initialize cache file $cacheFile to ".Cwd::getcwd.", $!";
+      open(my $FH, '>:encoding(UTF-8)', $s->cacheFile) or die "Couldn't initialize cache file=".$s->cacheFile.", Cwd=".Cwd::getcwd.", $!";
     }
     else {
       die $e;
     }
   };
 
-  $cache = eval "$cache";
-  $s->{pCache} = $cache;
+  $s->{pCache} = _evalCacheContents($cache);
   $s->{tCache} = {};
 }
 
+=head2 _evalCacheContents
+ @STATIC
+
+Turn the raw cache contents into a perl data structure
+
+ @PARAM1 String, raw cache contents
+ @RETURNS HASHRef
+
+=cut
+
+sub _evalCacheContents($contents) {
+  return eval "$contents";
+}
+
 sub saveCache($s) {
-  open(my $FH, '>:encoding(UTF-8)', $cacheFile) or die "Couldn't write cache file $cacheFile to ".Cwd::getcwd.", $!";
+  $l->debug("saveCache():> Cache to '".$s->cacheFile."' is being persisted");
+  open(my $FH, '>:encoding(UTF-8)', $s->cacheFile) or $l->logdie("Couldn't write cache file $s->cacheFile to ".Cwd::getcwd.", $!");
   print $FH Data::Dumper->new([$s->{cache}],[])->Terse(1)->Indent(1)->Varname('')->Maxdepth(0)->Sortkeys(1)->Quotekeys(1)->Dump();
   close($FH);
 }
@@ -129,16 +151,38 @@ sub pGet($s, $k) {
   return $s->{pCache}->{$k};
 }
 
+=head pFlush
+
+Flushes the persistent cache from disk, forcing the Pootle::Client to fetch new values from the Pootle Server's API on subsequent API requests.
+
+ @RETURNS whatever unlink returns, 0 on success, 1 on failure atleast. unlink docs don't say.
+
+=cut
+
 sub pFlush($s) {
+  $l->debug("pFlush():> Cache to '".$s->cacheFile."' is being flushed");
   $s->{pCache} = {};
-  unlink $cacheFile;
+  my $rv = unlink $s->cacheFile;
+  $l->error("pFlush():> Cache '".$s->cacheFile."' couldn't be flushed: $!") if $rv;
+  return $rv;
 }
 
 sub DESTROY($s) {
+  $l->debug("DESTROY():> Cache to '".$s->cacheFile."' is getting destroyed");
   eval { $s->saveCache(); };
   if ($@) {
-    warn $@;
+    $l->warn($@);
   }
 }
+
+sub cacheFile($s)            { return $s->{cacheFile} }
+
+=head2 Accessors
+
+=over 4
+
+=item B<cacheFile>
+
+=cut
 
 1;

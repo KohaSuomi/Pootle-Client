@@ -56,8 +56,8 @@ my $l = bless({}, 'Pootle::Logger'); #Lazy load package logger this way to avoid
     code => qr/^fi/,
   })->matches($objects);
 
-@PARAM1 ARRAYRef of {key => regexp}, {...} -pairs. Key selects the object's attribute to test against, and regexp matches against the attribute value
-@RETURNS Pootle::Client::Filters
+ @PARAM1 ARRAYRef of {key => regexp}, {...} -pairs. Key selects the object's attribute to test against, and regexp matches against the attribute value
+ @RETURNS Pootle::Client::Filters
 
 =cut
 
@@ -77,9 +77,9 @@ sub new($class, @params) {
 
 Apply filters to the given object and return if object matches them
 
-@PARAM1 Pootle::Resource::*-object
-@PARAM2 HASHRef of
-@RETURNS Boolean, True when all filters match
+ @PARAM1 Pootle::Resource::*-object
+ @PARAM2 HASHRef of
+ @RETURNS Boolean, True when all filters match
 
 =cut
 
@@ -111,7 +111,7 @@ sub filter($s, $objects) {
 
 Given two groups of Pootle::Resource::* -objects, finds an intersection of a given attribute.
 
-@RETURNS ARRAYRef of Pootle::Filters::Intersection-objects
+ @RETURNS ARRAYRef of Pootle::Filters::Intersection-objects
 
 =cut
 

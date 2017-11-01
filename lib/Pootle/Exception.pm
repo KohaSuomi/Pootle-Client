@@ -29,7 +29,7 @@ sub newFromDie {
 Because there are so many different types of exception classes with different
 interfaces, use this to rethrow if you dont know exactly what you are getting.
 
-@PARAM1 somekind of monster
+ @PARAM1 somekind of monster
 
 =cut
 
@@ -61,8 +61,8 @@ sub handleDefaults {
 
 =head2 toText
 
-@RETURNS String, a textual representation of this exception,
-                 Full::module::package :> error message, other supplied error keys
+ @RETURNS String, a textual representation of this exception,
+                  Full::module::package :> error message, other supplied error keys
 
 =cut
 
@@ -83,9 +83,9 @@ sub toText {
 }
 
 =head2 toTextUnknown
+ @STATIC
 
-@STATIC
-@RETURNS String, a textual representation of this exception,
+ @RETURNS String, a textual representation of this exception,
                  Full::module::package :> error message, other supplied error keys
 
 =cut

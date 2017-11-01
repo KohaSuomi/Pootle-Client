@@ -52,7 +52,7 @@ sub new($class, $params) {
 
 =head2 _authorization
 
-@RETURNS HTTP Basic authorization header content, eg. 'Basic QWxhZGRpbjpPcGVuU2VzYW1l'
+ @RETURNS HTTP Basic authorization header content, eg. 'Basic QWxhZGRpbjpPcGVuU2VzYW1l'
 
 =cut
 
@@ -64,10 +64,10 @@ sub _authorization($s) {
 
 Make requests and deal with logging and error handling
 
-@RETURNS List of 0 - HTTP::Response
-                 1 - HASHRef of response JSON payload
-@THROWS Pootle::Exception::HTTP::MethodNotAllowed endpoint doesn't support the given method
-@THROWS Pootle::Exception::HTTP::NotFound endpoint not found?
+ @RETURNS List of 0 - HTTP::Response
+                  1 - HASHRef of response JSON payload
+ @THROWS Pootle::Exception::HTTP::MethodNotAllowed endpoint doesn't support the given method
+ @THROWS Pootle::Exception::HTTP::NotFound endpoint not found?
 
 =cut
 
@@ -92,7 +92,7 @@ sub request($s, $verb, $apiUrl, $params) {
 
 =head2 _getContent
 
-@RETURNS HASHRef, Content's JSON payload decoded to Perl's internal UTF-8 representation
+ @RETURNS HASHRef, Content's JSON payload decoded to Perl's internal UTF-8 representation
 
 =cut
 
@@ -144,7 +144,7 @@ sub _loadCredentials($s) {
 
 =head2 baseUrl
 
-@RETURNS String, the full url of the Pootle server we are interfacing with, eg. https://translate.koha-community.org
+ @RETURNS String, the full url of the Pootle server we are interfacing with, eg. https://translate.koha-community.org
 
 =cut
 
@@ -154,7 +154,7 @@ sub baseUrl($s) {
 
 =head2 credentials
 
-@RETURNS String, username:password
+ @RETURNS String, username:password
 
 =cut
 

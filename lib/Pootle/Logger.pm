@@ -95,8 +95,8 @@ sub _levelToLog4perlLevelInt($level) {
 
 Given a bunch of $@%, the subroutine flattens those objects to a single human-readable string.
 
-@PARAMS Anything, concatenates parameters to one flat string
-@RETURNS String, params flattened
+ @PARAMS Anything, concatenates parameters to one flat string
+ @RETURNS String, params flattened
 
 =cut
 

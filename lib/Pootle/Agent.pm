@@ -134,7 +134,7 @@ sub _loadCredentials($s) {
   }
 
   unless ($c =~ /^(.+):(.+)$/) {
-    Pootle::Exception::Credentials->throw(error => "_loadCredentials():> Given credentials ".($file ? "from file '$file' " : "")."are malformed. Credentials must look like username:password");
+    Pootle::Exception::Credentials->throw(error => "_loadCredentials():> Given credentials ".($file ? "from file '$file' " : "")."are malformed. Credentials must look like username:password, or point to a file.");
   }
   return $c;
 }

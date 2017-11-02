@@ -131,6 +131,7 @@ sub _loadCredentials($s) {
     $l->info("Loading credentials from file '$c'");
     my @rows = File::Slurp::read_file( $c => { binmode => ':encoding(UTF-8)' } );
     $c = $rows[0];
+    chomp $c;
   }
 
   unless ($c =~ /^(.+):(.+)$/) {

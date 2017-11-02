@@ -13,7 +13,7 @@ use Carp::Always;
 use Try::Tiny;
 use Scalar::Util qw(blessed);
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 Pootle::Client
 
@@ -334,9 +334,9 @@ sub projects($s) {
 
 Uses the API to find all projects matching the given search expressions
 
-@PARAM1 L<Pootle::Filters>, matching criteria for needed objects
-@RETURNS ARRAYRef of L<Pootle::Resource::Project>. All matched projects.
-@CACHED Persistently
+ @PARAM1 L<Pootle::Filters>, matching criteria for needed objects
+ @RETURNS ARRAYRef of L<Pootle::Resource::Project>. All matched projects.
+ @CACHED Persistently
 
 =cut
 
@@ -355,8 +355,8 @@ sub findProjects($s, $filters) {
 
 =head2 unit
 
-@PARAM1 String, API endpoint to get the resource, eg. /api/v1/units/77/
-@RETURNS L<Pootle::Resource::Unit>
+ @PARAM1 String, API endpoint to get the resource, eg. /api/v1/units/77/
+ @RETURNS L<Pootle::Resource::Unit>
 
 =cut
 

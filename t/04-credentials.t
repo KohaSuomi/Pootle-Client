@@ -22,15 +22,31 @@ use t::Mock::Client;
 
 subtest "Load credentials from a file", \&credentialsFromFile;
 sub credentialsFromFile {
-  my $filters;
+  my ($fh, $filename, $papi);
   eval {
 
-  my ($fh, $filename) = File::Temp::tempfile();
+  #Write a file with nothing but the credentials
+  ($fh, $filename) = File::Temp::tempfile();
   print $fh "username:password";
   close $fh;
 
-  ok(my $papi = t::Mock::Client::new('http://translate.example.org', $filename),
+  ok($papi = t::Mock::Client::new('http://translate.example.org', $filename),
     "Given a Pootle::Client connection, with credentials from a file");
+
+
+  #Write other extra stuff to document the credentials file
+  ($fh, $filename) = File::Temp::tempfile();
+  print $fh <<TEXT;
+#This is a credentials file, Pootle::Client gets its credentials from here
+
+username:password
+
+#Thanks!
+TEXT
+  close $fh;
+
+  ok($papi = t::Mock::Client::new('http://translate.example.org', $filename),
+    "Given a Pootle::Client connection, with credentials from a bloated file");
 
   };
   if ($@) {
@@ -40,15 +56,15 @@ sub credentialsFromFile {
 
 subtest "Load bad credentials from a file", \&badCredentialsFromFile;
 sub badCredentialsFromFile {
-  my $filters;
+  my ($fh, $filename, $papi);
   eval {
 
-  my ($fh, $filename) = File::Temp::tempfile();
+  ($fh, $filename) = File::Temp::tempfile();
   print $fh "username-password";
   close $fh;
 
   try {
-    my $papi = t::Mock::Client::new('http://translate.example.org', $filename);
+    $papi = t::Mock::Client::new('http://translate.example.org', $filename);
     ok(0, "\$Pootle-Client should crash due to bad credentials from a file");
   } catch {
     ok(blessed($_) && $_->isa('Pootle::Exception::Credentials'),

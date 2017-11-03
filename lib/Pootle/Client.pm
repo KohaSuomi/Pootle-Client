@@ -57,6 +57,21 @@ use Pootle::Resource::Project;
 use Pootle::Logger;
 my $l = bless({}, 'Pootle::Logger'); #Lazy load package logger this way to avoid circular dependency issues with logger includes from many packages
 
+=head2 new($params)
+
+Instantiates a new Pootle::Client
+
+ $params HASHRef of parameters {
+           baseUrl => 'http://translate.pootle.url',
+           credentials => 'usename:password' ||
+                          'credentials.file.containing.credentials.txt',
+           cacheFile => 'pootle-client.cache',
+         }
+
+ @returns Pootle::Client
+
+=cut
+
 sub new($class, @params) {
   $l->debug("Initializing '$class' with parameters: ".$l->flatten(@params)) if $l->is_debug();
   my %self = validate(@params, {

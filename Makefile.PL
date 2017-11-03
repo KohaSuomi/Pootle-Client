@@ -15,7 +15,7 @@ WriteMakefile(
     dynamic_config => 0,
     'meta-spec'    => {version => 2},
     no_index       => {directory => ['examples', 't']},
-    prereqs        => {runtime => {requires => {perl => '5.22.1'}}},
+    prereqs        => {runtime => {requires => {perl => '5.20'}}},
     resources      => {
       bugtracker => {web => 'https://github.com/KohaSuomi/Pootle-Client/issues'},
       homepage   => 'https://github.com/KohaSuomi/Pootle-Client/',
@@ -27,9 +27,16 @@ WriteMakefile(
     },
   },
   PREREQ_PM => {
-    'LWP::UserAgent'        => '6.27',
-    'JSON::XS'              => '3.04',
+    'Carp::Always'          => '0.13',
+    'Exception::Class'      => '1.43',
     'File::Temp'            => '0.2304',
+    'JSON::XS'              => '3.04',
+    'Log::Log4perl'         => '1.49',
+    'LWP::UserAgent'        => '6.27',
+    'MIME::Base64'          => '3.15',
+    'Params::Validate'      => '1.29',
+    'Test::MockModule'      => '0.13',
+    'Try::Tiny'             => '0.28',
   },
   EXE_FILES => ['script/pootle-client'],
   test => {TESTS => 't/*.t t/*/*.t'}

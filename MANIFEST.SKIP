@@ -23,3 +23,5 @@
 .*\.cache
 .*\.swp
 .*\.tar\.gz
+^pm_to_blib
+

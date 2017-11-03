@@ -10,6 +10,7 @@
 ^Makefile$
 ^blib/
 ^MakeMaker-\d
+^MYMETA.*
 
 # Temp, old and emacs backup files.
 ~$
@@ -21,3 +22,4 @@
 .*\.old
 .*\.cache
 .*\.swp
+.*\.tar\.gz

@@ -13,7 +13,7 @@ use Carp::Always;
 use Try::Tiny;
 use Scalar::Util qw(blessed);
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 =head1 Pootle::Client
 

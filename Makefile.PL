@@ -36,6 +36,7 @@ WriteMakefile(
     'MIME::Base64'          => '3.15',
     'Params::Validate'      => '1.22',
     'Test::MockModule'      => '0.11',
+    'Test::Exception'       => '0.38',
     'Try::Tiny'             => '0.24',
   },
   EXE_FILES          => ['script/pootle-client'],

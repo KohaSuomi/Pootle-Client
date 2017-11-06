@@ -13,6 +13,7 @@ use Scalar::Util qw(blessed);
 use Data::Dumper;
 
 use Test::More;
+use Test::Exception;
 use File::Temp;
 
 use Pootle::Client;
@@ -63,14 +64,13 @@ sub badCredentialsFromFile {
   print $fh "username-password";
   close $fh;
 
-  try {
-    $papi = t::Mock::Client::new('http://translate.example.org', $filename);
-    ok(0, "\$Pootle-Client should crash due to bad credentials from a file");
-  } catch {
-    ok(blessed($_) && $_->isa('Pootle::Exception::Credentials'),
-       "Received proper Credentials-exception");
-    like($_, qr/$filename/, "Faulting filename mentioned in exception");
-  };
+  throws_ok(sub {
+      $papi = t::Mock::Client::new('http://translate.example.org', $filename);
+    }, 'Pootle::Exception::Credentials',
+    "Received proper Credentials-exception");
+
+  like($@, qr/$filename/,
+    "Faulting filename mentioned in exception");
 
   };
   if ($@) {

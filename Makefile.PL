@@ -8,7 +8,7 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
   NAME               => 'Pootle::Client',
-  VERSION_FROM       => 'lib/Pootle/Client.pm',
+  VERSION            => '0.08',
   ABSTRACT           => 'Pootle API Client library',
   AUTHOR             => 'Olli-Antti Kivilahti <olli-antti.kivilahti@jns.fi>',
   LICENSE            => 'Perl_5',
@@ -37,9 +37,11 @@ WriteMakefile(
     'MIME::Base64'          => '3.15',
     'Modern::Perl'          => '1.20161005',
     'Params::Validate'      => '1.22',
+    'Try::Tiny'             => '0.24',
+  },
+  TEST_REQUIRES => {
     'Test::MockModule'      => '0.11',
     'Test::Exception'       => '0.38',
-    'Try::Tiny'             => '0.24',
   },
   EXE_FILES          => ['script/pootle-client'],
   test               => { TESTS => 't/*.t t/*/*.t' }

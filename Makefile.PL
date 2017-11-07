@@ -1,4 +1,5 @@
-use Modern::Perl '2015';
+use strict;
+use warnings;
 use utf8;
 binmode STDOUT, ':encoding(UTF-8)';
 binmode STDERR, ':encoding(UTF-8)';
@@ -34,6 +35,7 @@ WriteMakefile(
     'Log::Log4perl'         => '1.49',
     'LWP::UserAgent'        => '6.15',
     'MIME::Base64'          => '3.15',
+    'Modern::Perl'          => '1.20161005',
     'Params::Validate'      => '1.22',
     'Test::MockModule'      => '0.11',
     'Test::Exception'       => '0.38',
